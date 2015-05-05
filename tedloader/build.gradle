@@ -1,0 +1,11 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'com.netflix.rxjava:rxjava-android:0.20.7'
+    compile files('libs/feed4j.jar')
+}
