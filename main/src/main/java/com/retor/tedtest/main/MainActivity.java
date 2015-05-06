@@ -1,17 +1,22 @@
 package com.retor.tedtest.main;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import ted.loader.TedNews;
 import ted.loader.interfaces.IPresenter;
+import ted.loader.interfaces.IScheduler;
 import ted.loader.interfaces.IView;
 import ted.loader.presenter.PresenterImpl;
 
@@ -20,10 +25,10 @@ import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity implements IView<TedNews> {
 
-    String mainUrl = "http://www.ted.com/talks/rss";
+    String mainUrl = "http://www.ted.com/talks/rss";//"http://feeds.feedburner.com/tedtalks_video";
+    ProgressDialog pd;
     private RecyclerView recyclerView;
     private MAdapter adapter = new MAdapter();
-    ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,14 +36,36 @@ public class MainActivity extends FragmentActivity implements IView<TedNews> {
         setContentView(R.layout.activity_main);
         pd = new ProgressDialog(this);
         recyclerView = (RecyclerView) findViewById(R.id.recycle);
-        IPresenter presenter = new PresenterImpl(this);
-        presenter.getData(mainUrl);
+        final IPresenter presenter = new PresenterImpl(new IScheduler() {
+            @Override
+            public Scheduler getMain() {
+                return AndroidSchedulers.mainThread();
+            }
+
+            @Override
+            public Scheduler getBack() {
+                return Schedulers.newThread();
+            }
+        }, this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
         pd.setMessage("Loading rss...");
+        presenter.getData(mainUrl);
         pd.show();
+
+/*        IModel<TedNews> m = new ModelImpl();
+        m.getData(mainUrl)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ArrayList<TedNews>>() {
+                    @Override
+                    public void call(ArrayList<TedNews> tedNewses) {
+                        adapter.setItems(tedNewses);
+                        adapter.notifyDataSetChanged();
+                    }
+                });*/
     }
 
 
@@ -80,6 +107,13 @@ public class MainActivity extends FragmentActivity implements IView<TedNews> {
 
     @Override
     public void onError(Throwable t) {
-        DialogFragment.instantiate(getApplicationContext(), "Error");//TODO Error show
+        if (pd.isShowing())
+            pd.dismiss();
+        new AlertDialog.Builder(this).setMessage(t.getLocalizedMessage()).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                MainActivity.this.finish();
+            }
+        }).create().show();//TODO Error show
     }
 }

@@ -16,17 +16,17 @@ import java.util.List;
  */
 public class MAdapter extends RecyclerView.Adapter<MViewHolder> {
 
-    private List<TedNews> items;
+    private List<TedNews> items = new ArrayList<TedNews>();
 
     public MAdapter() {
     }
 
     public MAdapter(ArrayList<TedNews> items) {
-        this.items = items;
+        this.items.addAll(items);
     }
 
     public void setItems(List<TedNews> items) {
-        this.items = items;
+        this.items.addAll(items);
     }
 
     @Override
