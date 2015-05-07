@@ -7,55 +7,37 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 /**
  * Created by retor on 07.05.2015.
  */
 public class RssLoader implements ILoader {
-    private int tryCounter = 0;
 
     DocumentBuilderFactory factory;
     DocumentBuilder builder;
 
-
-
-
+    public RssLoader() {
+        this.factory = DocumentBuilderFactory.newInstance();
+    }
 
     @Override
-    public String getResponse(String url) throws LoaderException {
-        this.factory = DocumentBuilderFactory.newInstance();
+    public Document getResponse(String url) throws LoaderException {
+        Document out;
         try {
             this.builder = factory.newDocumentBuilder();
-            Document document = builder.parse(url);
-            document.getDocumentElement().getChildNodes();
+            out = builder.parse(url);
+            out.getDocumentElement().getChildNodes();
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            throw new LoaderException("Loaded response is NULL", e);
         } catch (SAXException e) {
-            e.printStackTrace();
+            throw new LoaderException("Loaded response is NULL", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new LoaderException("Loaded response is NULL", e);
         }
-        String tmp = null;
-        try {
-            InputStream inputStream = new URL(url).openStream();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int length = 0;
-            while ((length = inputStream.read(buffer)) != -1) {
-                baos.write(buffer, 0, length);
-            }
-            tmp = new String(baos.toByteArray());
-        } catch (IOException e) {
-            throw new LoaderException("Loaded response is NULL");
-        }
-        if (tmp != null) {
-            tryCounter=0;
-            return tmp;
-        }else {
+        if (out != null) {
+            return out;
+        }else{
             throw new LoaderException("Loaded response is NULL");
         }
     }

@@ -1,51 +1,27 @@
 package com.parserlib.parser;
 
 import com.parserlib.beans.Channel;
-import com.parserlib.beans.Item;
-import com.parserlib.beans.Media;
+import com.parserlib.exceptions.ParserException;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.util.ArrayList;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Created by retor on 07.05.2015.
  */
 public class Parser implements IParser {
 
-    DocumentBuilderFactory factory;
-    DocumentBuilder builder;
-
-    public Parser() throws ParserConfigurationException {
-        this.factory = DocumentBuilderFactory.newInstance();
-        this.builder = factory.newDocumentBuilder();
+    public Parser() {
     }
 
     @Override
-    public Channel getChanel(String response) {
-
-        try {
-            Document document = builder.parse(response);
-            document.getDocumentElement().getChildNodes();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public Channel getChanel(Document response) throws ParserException {
+        NodeList channels = response.getElementsByTagName("channel");
+        response.getElementsByTagName("item");
+        int nlistlenght = channels.getLength();
+        Node channel = channels.item(0);
+        Channel ch = new Channel(channel);
+        return ch;
     }
 
-    @Override
-    public Item getItems(Channel channel) {
-        return null;
-    }
-
-    @Override
-    public ArrayList<Media> getMedia(Item item) {
-        return null;
-    }
 }

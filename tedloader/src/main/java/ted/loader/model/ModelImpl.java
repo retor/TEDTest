@@ -3,6 +3,7 @@ package ted.loader.model;
 
 import com.parserlib.beans.Channel;
 import com.parserlib.exceptions.LoaderException;
+import com.parserlib.exceptions.ParserException;
 import com.parserlib.loader.RssLoader;
 import com.parserlib.parser.Parser;
 import com.parserlib.worker.IWorker;
@@ -11,7 +12,6 @@ import rx.Observable;
 import rx.Subscriber;
 import ted.loader.interfaces.IModel;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.util.ArrayList;
 
 
@@ -27,16 +27,16 @@ public class ModelImpl implements IModel<Channel> {
         return Observable.create(new Observable.OnSubscribe<ArrayList<Channel>>() {
             @Override
             public void call(final Subscriber<? super ArrayList<Channel>> subscriber) {
-                ArrayList<Channel> out = new ArrayList<Channel>();
                 try {
                     IWorker worker = new MainWorker(new RssLoader(), new Parser());
-                    out.addAll(worker.getData(url));
+                    subscriber.onNext(worker.getData(url));
                 } catch (LoaderException e) {
                     subscriber.onError(e);
-                } catch (ParserConfigurationException e) {
+                } catch (ParserException e) {
                     subscriber.onError(e);
                 }
-                subscriber.onNext(out);
+
+                subscriber.onCompleted();
             }
         });
     }

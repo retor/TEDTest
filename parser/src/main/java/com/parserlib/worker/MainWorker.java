@@ -2,6 +2,7 @@ package com.parserlib.worker;
 
 import com.parserlib.beans.Channel;
 import com.parserlib.exceptions.LoaderException;
+import com.parserlib.exceptions.ParserException;
 import com.parserlib.loader.ILoader;
 import com.parserlib.parser.IParser;
 
@@ -20,7 +21,7 @@ public class MainWorker implements IWorker {
     }
 
     @Override
-    public ArrayList<Channel> getData(String url) throws LoaderException {
+    public ArrayList<Channel> getData(String url) throws LoaderException, ParserException {
         ArrayList<Channel> out = new ArrayList<Channel>();
         out.add(parser.getChanel(loader.getResponse(url)));
         return out;

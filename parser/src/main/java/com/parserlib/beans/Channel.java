@@ -1,5 +1,9 @@
 package com.parserlib.beans;
 
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -14,6 +18,14 @@ public class Channel {
     private String pubDate;
     private ChannelImage image;
     private ArrayList<Item> items;
+
+    public Channel(Node in){
+
+        NodeList items = in.getChildNodes();
+        NamedNodeMap namedNodeMap = in.getAttributes();
+        namedNodeMap.getLength();
+
+    }
 
     public Channel() {
     }
