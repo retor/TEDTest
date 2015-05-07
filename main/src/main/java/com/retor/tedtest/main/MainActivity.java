@@ -11,10 +11,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.parserlib.beans.Channel;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import ted.loader.TedNews;
 import ted.loader.interfaces.IPresenter;
 import ted.loader.interfaces.IScheduler;
 import ted.loader.interfaces.IView;
@@ -23,9 +23,9 @@ import ted.loader.presenter.PresenterImpl;
 import java.util.ArrayList;
 
 
-public class MainActivity extends FragmentActivity implements IView<TedNews> {
+public class MainActivity extends FragmentActivity implements IView<Channel> {
 
-    String mainUrl = "http://www.ted.com/talks/rss";//"http://feeds.feedburner.com/tedtalks_video";
+    String mainUrl = "http://www.ted.com/themes/rss/id/25";//"http://www.ted.com/talks/rss";//"http://feeds.feedburner.com/tedtalks_video";http://www.ted.com/themes/rss/id/25
     ProgressDialog pd;
     private RecyclerView recyclerView;
     private MAdapter adapter = new MAdapter();
@@ -44,7 +44,7 @@ public class MainActivity extends FragmentActivity implements IView<TedNews> {
 
             @Override
             public Scheduler getBack() {
-                return Schedulers.newThread();
+                return Schedulers.io();
             }
         }, this);
         recyclerView.setHasFixedSize(true);
@@ -54,18 +54,6 @@ public class MainActivity extends FragmentActivity implements IView<TedNews> {
         pd.setMessage("Loading rss...");
         presenter.getData(mainUrl);
         pd.show();
-
-/*        IModel<TedNews> m = new ModelImpl();
-        m.getData(mainUrl)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ArrayList<TedNews>>() {
-                    @Override
-                    public void call(ArrayList<TedNews> tedNewses) {
-                        adapter.setItems(tedNewses);
-                        adapter.notifyDataSetChanged();
-                    }
-                });*/
     }
 
 
@@ -92,7 +80,7 @@ public class MainActivity extends FragmentActivity implements IView<TedNews> {
     }
 
     @Override
-    public void update(ArrayList<TedNews> data) {
+    public void update(ArrayList<Channel> data) {
         Log.d("MainAcrtivity", data.toString());
         adapter.setItems(data);
         recyclerView.setAdapter(adapter);
@@ -101,7 +89,7 @@ public class MainActivity extends FragmentActivity implements IView<TedNews> {
     }
 
     @Override
-    public void loadItem(TedNews item) {
+    public void loadItem(Channel item) {
         //TODO new Fragment or load video and start play
     }
 

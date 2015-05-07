@@ -1,1 +1,2 @@
-include ':main', ':tedloader'
+include ':main', ':tedloader', ':parser'
+

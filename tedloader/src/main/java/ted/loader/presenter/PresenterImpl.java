@@ -1,8 +1,9 @@
 package ted.loader.presenter;
 
+
+import com.parserlib.beans.Channel;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import ted.loader.TedNews;
 import ted.loader.interfaces.IModel;
 import ted.loader.interfaces.IPresenter;
 import ted.loader.interfaces.IScheduler;
@@ -16,18 +17,17 @@ import java.util.ArrayList;
  * Created by retor on 05.05.2015.
  */
 public class PresenterImpl implements IPresenter {
-    IModel<TedNews> model;
-    IView<TedNews> view;
-    ArrayList<TedNews> items = new ArrayList<TedNews>();
+    IModel<Channel> model;
+    IView<Channel> view;
+    ArrayList<Channel> items = new ArrayList<Channel>();
     IScheduler schedulers;
 
-
-    public PresenterImpl(IView<TedNews> view) {
+    public PresenterImpl(IView<Channel> view) {
         this.model = new ModelImpl();
         this.view = view;
     }
 
-    public PresenterImpl(IScheduler schedulers, IView<TedNews> view) {
+    public PresenterImpl(IScheduler schedulers, IView<Channel> view) {
         this.model = new ModelImpl();
         this.schedulers = schedulers;
         this.view = view;
@@ -38,9 +38,9 @@ public class PresenterImpl implements IPresenter {
         model.getData(url)
                 .subscribeOn(schedulers.getBack())
                 .observeOn(schedulers.getMain())
-                .subscribe(new Action1<ArrayList<TedNews>>() {
+                .subscribe(new Action1<ArrayList<Channel>>() {
                     @Override
-                    public void call(ArrayList<TedNews> tedNewses) {
+                    public void call(ArrayList<Channel> tedNewses) {
                         items.addAll(tedNewses);
                     }
                 }, new Action1<Throwable>() {
