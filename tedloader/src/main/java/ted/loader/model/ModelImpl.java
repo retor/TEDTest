@@ -35,7 +35,6 @@ public class ModelImpl implements IModel<Channel> {
                 } catch (ParserException e) {
                     subscriber.onError(e);
                 }
-
                 subscriber.onCompleted();
             }
         });

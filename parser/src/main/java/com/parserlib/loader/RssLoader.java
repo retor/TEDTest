@@ -27,13 +27,15 @@ public class RssLoader implements ILoader {
         try {
             this.builder = factory.newDocumentBuilder();
             out = builder.parse(url);
-            out.getDocumentElement().getChildNodes();
+//            out.getDocumentElement().getChildNodes();
         } catch (ParserConfigurationException e) {
-            throw new LoaderException("Loaded response is NULL", e);
+            throw new LoaderException("Loaded response ParserConfigurationException", e);
         } catch (SAXException e) {
-            throw new LoaderException("Loaded response is NULL", e);
+            throw new LoaderException("Loaded response SAXException", e);
         } catch (IOException e) {
-            throw new LoaderException("Loaded response is NULL", e);
+            throw new LoaderException("Loaded response IOException", e);
+        }finally {
+            builder.reset();
         }
         if (out != null) {
             return out;

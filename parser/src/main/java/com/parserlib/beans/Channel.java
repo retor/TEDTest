@@ -1,10 +1,10 @@
 package com.parserlib.beans;
 
-import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Element;
+import org.w3c.dom.Entity;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -12,25 +12,75 @@ import java.util.ArrayList;
  */
 public class Channel {
     private String title;
-    private URL link;
+    private String link;
     private String description;
     private String language;
     private String pubDate;
     private ChannelImage image;
     private ArrayList<Item> items;
 
-    public Channel(Node in){
+    public Channel(Node in) {
+        try {
+            if (in.getNodeType() == Node.ELEMENT_NODE) {
+                Element root = (Element) in;
+                int l = root.getChildNodes().getLength();
+                NodeList cl = in.getChildNodes();
+                for (int i = 0; i < l; i++) {
+                    String rr = cl.item(i).getLocalName() + cl.item(i).getNodeType() + cl.item(i).getNodeName();
+                    rr.toString();
+                    if (cl.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                        if (cl.item(i).getNodeName().equalsIgnoreCase("title"))
+                            this.title = cl.item(i).getChildNodes().item(0).getNodeValue();
+                        if (cl.item(i).getNodeName().equalsIgnoreCase("description"))
+                            this.description = cl.item(i).getChildNodes().item(0).getNodeValue();
+                        if (cl.item(i).getNodeName().equalsIgnoreCase("language"))
+                            this.language = cl.item(i).getChildNodes().item(0).getNodeValue();
+                        if (cl.item(i).getNodeName().equalsIgnoreCase("pubDate"))
+                            this.pubDate = cl.item(i).getChildNodes().item(0).getNodeValue();
+                        if (cl.item(i).getNodeName().equalsIgnoreCase("image"))
+                            this.image = new ChannelImage(cl.item(i));
+                        if (cl.item(i).getNodeName().equalsIgnoreCase("item"))
+                            this.items.add(new Item(cl.item(i)));
+                        if (cl.item(i).getNodeName().equalsIgnoreCase("link"))
+                            this.link = cl.item(i).getChildNodes().item(0).getNodeValue();
+                    }
+                    if (cl.item(i).getNodeType() == Node.ENTITY_NODE) {
+                        Entity tmp = (Entity) cl.item(i);
+                    }
+                }
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
-        NodeList items = in.getChildNodes();
-        NamedNodeMap namedNodeMap = in.getAttributes();
-        namedNodeMap.getLength();
 
+//        in.normalize();
+//        String s =
+//        in.getNodeType() +
+//        in.getLocalName();
+//        NodeList iT = in.getOwnerDocument().getElementsByTagName("item");
+//        NamedNodeMap namedNodeMap = in.getAttributes();
+//        for (int i = 0; i<in.getChildNodes().getLength(); i++){
+//
+//        }
+//
+//        title = namedNodeMap.getNamedItem("title").getNodeValue();
+//        try {
+//            link = new URL(namedNodeMap.getNamedItem("link").getNodeValue());
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        }
+//        description = namedNodeMap.getNamedItem("description").getNodeValue();
+//        language = namedNodeMap.getNamedItem("language").getNodeValue();
+//        pubDate = namedNodeMap.getNamedItem("pubDate").getNodeValue();
+//        image = new ChannelImage(namedNodeMap.getNamedItem("image"));
+///*            if (namedNodeMap.item(i).getLocalName().equalsIgnoreCase("item"))
+//                items.add(new Item(namedNodeMap.item(i)));*/
+//
+//        in.getAttributes();
     }
 
-    public Channel() {
-    }
-
-    public Channel(String description, ChannelImage image, ArrayList<Item> items, String language, URL link, String pubDate, String title) {
+    public Channel(String description, ChannelImage image, ArrayList<Item> items, String language, String link, String pubDate, String title) {
         this.description = description;
         this.image = image;
         this.items = items;
@@ -72,11 +122,11 @@ public class Channel {
         this.language = language;
     }
 
-    public URL getLink() {
+    public String getLink() {
         return link;
     }
 
-    public void setLink(URL link) {
+    public void setLink(String link) {
         this.link = link;
     }
 

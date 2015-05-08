@@ -12,11 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.parserlib.beans.Channel;
-import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import ted.loader.interfaces.IPresenter;
-import ted.loader.interfaces.IScheduler;
 import ted.loader.interfaces.IView;
 import ted.loader.presenter.PresenterImpl;
 
@@ -28,25 +24,16 @@ public class MainActivity extends FragmentActivity implements IView<Channel> {
     String mainUrl = "http://www.ted.com/themes/rss/id/25";//"http://www.ted.com/talks/rss";//"http://feeds.feedburner.com/tedtalks_video";http://www.ted.com/themes/rss/id/25
     ProgressDialog pd;
     private RecyclerView recyclerView;
-    private MAdapter adapter = new MAdapter();
+    private MAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        adapter = new MAdapter(this);
         pd = new ProgressDialog(this);
         recyclerView = (RecyclerView) findViewById(R.id.recycle);
-        final IPresenter presenter = new PresenterImpl(new IScheduler() {
-            @Override
-            public Scheduler getMain() {
-                return AndroidSchedulers.mainThread();
-            }
-
-            @Override
-            public Scheduler getBack() {
-                return Schedulers.io();
-            }
-        }, this);
+        final IPresenter presenter = new PresenterImpl(this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(new DefaultItemAnimator());

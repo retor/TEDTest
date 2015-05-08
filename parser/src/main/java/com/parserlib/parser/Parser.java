@@ -20,7 +20,7 @@ public class Parser implements IParser {
         response.getElementsByTagName("item");
         int nlistlenght = channels.getLength();
         Node channel = channels.item(0);
-        Channel ch = new Channel(channel);
+        Channel ch = new Channel(response.getDocumentElement().getElementsByTagName("channel").item(0));
         return ch;
     }
 

@@ -2,8 +2,11 @@ package ted.loader.presenter;
 
 
 import com.parserlib.beans.Channel;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import ted.loader.interfaces.IModel;
 import ted.loader.interfaces.IPresenter;
 import ted.loader.interfaces.IScheduler;
@@ -25,6 +28,17 @@ public class PresenterImpl implements IPresenter {
     public PresenterImpl(IView<Channel> view) {
         this.model = new ModelImpl();
         this.view = view;
+        this.schedulers = new IScheduler() {
+            @Override
+            public Scheduler getMain() {
+                return AndroidSchedulers.mainThread();
+            }
+
+            @Override
+            public Scheduler getBack() {
+                return Schedulers.io();
+            }
+        };
     }
 
     public PresenterImpl(IScheduler schedulers, IView<Channel> view) {
