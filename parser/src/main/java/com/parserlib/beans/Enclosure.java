@@ -1,23 +1,21 @@
 package com.parserlib.beans;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Entity;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Created by retor on 07.05.2015.
  */
 public class Enclosure {
     private String url;
-    private long lenght;
+    private long length;
     private String type;
 
     public Enclosure() {
     }
 
-    public Enclosure(long lenght, String type, String url) {
-        this.lenght = lenght;
+    public Enclosure(long length, String type, String url) {
+        this.length = length;
         this.type = type;
         this.url = url;
     }
@@ -26,7 +24,10 @@ public class Enclosure {
         try {
             if (item.getNodeType() == Node.ELEMENT_NODE) {
                 Element root = (Element) item;
-                int l = root.getChildNodes().getLength();
+                this.url = root.getAttribute("url");
+                this.length = Long.valueOf(root.getAttribute("length"));
+                this.type = root.getAttribute("type");
+                /*int l = root.getChildNodes().getLength();
                 NodeList cl = item.getChildNodes();
                 for (int i = 0; i < l; i++) {
                     String rr = cl.item(i).getLocalName() + cl.item(i).getNodeType() + cl.item(i).getNodeName();
@@ -42,19 +43,19 @@ public class Enclosure {
                     if (cl.item(i).getNodeType() == Node.ENTITY_NODE) {
                         Entity tmp = (Entity) cl.item(i);
                     }
-                }
+                }*/
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
     }
 
-    public long getLenght() {
-        return lenght;
+    public long getLength() {
+        return length;
     }
 
-    public void setLenght(long lenght) {
-        this.lenght = lenght;
+    public void setLength(long length) {
+        this.length = length;
     }
 
     public String getType() {

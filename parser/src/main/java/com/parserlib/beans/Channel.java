@@ -52,32 +52,6 @@ public class Channel {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-
-
-//        in.normalize();
-//        String s =
-//        in.getNodeType() +
-//        in.getLocalName();
-//        NodeList iT = in.getOwnerDocument().getElementsByTagName("item");
-//        NamedNodeMap namedNodeMap = in.getAttributes();
-//        for (int i = 0; i<in.getChildNodes().getLength(); i++){
-//
-//        }
-//
-//        title = namedNodeMap.getNamedItem("title").getNodeValue();
-//        try {
-//            link = new URL(namedNodeMap.getNamedItem("link").getNodeValue());
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-//        description = namedNodeMap.getNamedItem("description").getNodeValue();
-//        language = namedNodeMap.getNamedItem("language").getNodeValue();
-//        pubDate = namedNodeMap.getNamedItem("pubDate").getNodeValue();
-//        image = new ChannelImage(namedNodeMap.getNamedItem("image"));
-///*            if (namedNodeMap.item(i).getLocalName().equalsIgnoreCase("item"))
-//                items.add(new Item(namedNodeMap.item(i)));*/
-//
-//        in.getAttributes();
     }
 
     public Channel(String description, ChannelImage image, ArrayList<Item> items, String language, String link, String pubDate, String title) {
