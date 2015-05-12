@@ -12,7 +12,6 @@ public class Thumbnail implements IFiller{
     private String url;
     private int width;
     private int height;
-    private byte[] data;
 
     public Thumbnail(int height, String url, int width) {
         this.height = height;
@@ -22,14 +21,6 @@ public class Thumbnail implements IFiller{
 
     public Thumbnail(Node item) throws ParserException {
         fill(item);
-    }
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public void setData(byte[] data) {
-        this.data = data;
     }
 
     public int getHeight() {

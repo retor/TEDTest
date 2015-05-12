@@ -14,6 +14,8 @@ public class MViewHolder extends RecyclerView.ViewHolder {
     TextView headerText;
     //    VideoView mainVideo;
     TextView description;
+    TextView duration;
+    TextView pubdate;
     ImageView thumb;
 
     public MViewHolder(View itemView) {
@@ -21,7 +23,25 @@ public class MViewHolder extends RecyclerView.ViewHolder {
         headerText = (TextView) itemView.findViewById(R.id.title);
 //        mainVideo = (VideoView)itemView.findViewById(R.id.video);
         description = (TextView) itemView.findViewById(R.id.description);
+        duration = (TextView) itemView.findViewById(R.id.duration);
+        pubdate = (TextView) itemView.findViewById(R.id.pubdate);
         thumb = (ImageView)itemView.findViewById(R.id.thumb);
+    }
+
+    public TextView getDuration() {
+        return duration;
+    }
+
+    public void setDuration(TextView duration) {
+        this.duration = duration;
+    }
+
+    public TextView getPubdate() {
+        return pubdate;
+    }
+
+    public void setPubdate(TextView pubdate) {
+        this.pubdate = pubdate;
     }
 
     public TextView getDescription() {

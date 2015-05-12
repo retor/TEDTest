@@ -2,7 +2,7 @@ package com.retor.tedtest.main;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,8 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.parserlib.beans.Item;
 import com.retor.tedtest.main.ted.MViewHolder;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,10 +30,12 @@ public class MAdapter extends RecyclerView.Adapter<MViewHolder> {
 
     public MAdapter(ArrayList<Item> items) {
         this.items.addAll(items);
+        Collections.reverse(this.items);
     }
 
     public void setItems(List<Item> items) {
         this.items.addAll(items);
+        Collections.reverse(this.items);
     }
 
     @Override
@@ -45,8 +49,10 @@ public class MAdapter extends RecyclerView.Adapter<MViewHolder> {
         Item tmp = items.get(i);
         if (tmp != null && tmp.getTitle() != null) {
             holder.getHeaderText().setText(tmp.getTitle());
-            holder.getThumb().setImageBitmap(BitmapFactory.decodeByteArray(tmp.getThumbnail().getData(), 0, tmp.getThumbnail().getData().length));
+            Picasso.with(context).load(Uri.parse(tmp.getThumbnail().getUrl())).into(holder.getThumb());
             holder.getDescription().setText(tmp.getDescription());
+            holder.getDuration().setText(tmp.getDurationiTunes());
+            holder.getPubdate().setText(tmp.getPubDate().substring(0, tmp.getPubDate().length()-6));
         } else {
             new AlertDialog.Builder(context).setMessage("Null Array or item Exception").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
