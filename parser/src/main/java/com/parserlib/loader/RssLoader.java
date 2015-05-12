@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * Created by retor on 07.05.2015.
  */
-public class RssLoader implements ILoader {
+public class RssLoader implements ILoader<Document> {
 
     DocumentBuilderFactory factory;
     DocumentBuilder builder;

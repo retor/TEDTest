@@ -1,22 +1,18 @@
 package com.parserlib.beans;
 
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Entity;
+import com.parserlib.exceptions.ParserException;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Created by retor on 07.05.2015.
  */
-public class Thumbnail {
+public class Thumbnail implements IFiller{
     private String url;
     private int width;
     private int height;
-
-    public Thumbnail() {
-
-    }
+    private byte[] data;
 
     public Thumbnail(int height, String url, int width) {
         this.height = height;
@@ -24,31 +20,16 @@ public class Thumbnail {
         this.width = width;
     }
 
-    public Thumbnail(Node item) {
-        try {
-            if (item.getNodeType() == Node.ELEMENT_NODE) {
-                Element root = (Element) item;
-                int l = root.getChildNodes().getLength();
-                NodeList cl = item.getChildNodes();
-                for (int i = 0; i < l; i++) {
-                    String rr = cl.item(i).getLocalName() + cl.item(i).getNodeType() + cl.item(i).getNodeName();
-                    rr.toString();
-                    if (cl.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("url"))
-                            this.url = cl.item(i).getChildNodes().item(0).getNodeValue();
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("width"))
-                            this.width = Integer.valueOf(cl.item(i).getChildNodes().item(0).getNodeValue());
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("height"))
-                            this.height = Integer.valueOf(cl.item(i).getChildNodes().item(0).getNodeValue());
-                    }
-                    if (cl.item(i).getNodeType() == Node.ENTITY_NODE) {
-                        Entity tmp = (Entity) cl.item(i);
-                    }
-                }
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+    public Thumbnail(Node item) throws ParserException {
+        fill(item);
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     public int getHeight() {
@@ -73,5 +54,19 @@ public class Thumbnail {
 
     public void setWidth(int width) {
         this.width = width;
+    }
+
+    @Override
+    public void fill(Node item) throws ParserException {
+        try {
+            if (item.getNodeType() == Node.ELEMENT_NODE) {
+                NamedNodeMap attributes = item.getAttributes();
+                this.url = attributes.getNamedItem("url").getNodeValue();
+                this.width = Integer.valueOf(attributes.getNamedItem("width").getNodeValue());
+                this.height = Integer.valueOf(attributes.getNamedItem("height").getNodeValue());
+            }
+        } catch (NullPointerException e) {
+            throw new ParserException("Thumb null", e);
+        }
     }
 }

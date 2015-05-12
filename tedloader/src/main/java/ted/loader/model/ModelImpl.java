@@ -10,7 +10,6 @@ import com.parserlib.worker.IWorker;
 import com.parserlib.worker.MainWorker;
 import rx.Observable;
 import rx.Subscriber;
-import ted.loader.interfaces.IModel;
 
 import java.util.ArrayList;
 
@@ -19,8 +18,7 @@ import java.util.ArrayList;
 /**
  * Created by retor on 05.05.2015.
  */
-public class ModelImpl implements IModel<Channel> {
-
+public class ModelImpl implements IModel<ArrayList<Channel>> {
 
     @Override
     public Observable<ArrayList<Channel>> getData(final String url) {
@@ -28,7 +26,7 @@ public class ModelImpl implements IModel<Channel> {
             @Override
             public void call(final Subscriber<? super ArrayList<Channel>> subscriber) {
                 try {
-                    IWorker worker = new MainWorker(new RssLoader(), new Parser());
+                    IWorker<ArrayList<Channel>> worker = new MainWorker(new RssLoader(), new Parser());
                     subscriber.onNext(worker.getData(url));
                 } catch (LoaderException e) {
                     subscriber.onError(e);
@@ -38,10 +36,5 @@ public class ModelImpl implements IModel<Channel> {
                 subscriber.onCompleted();
             }
         });
-    }
-
-    @Override
-    public Observable<Channel> getItem(String url) {
-        return null;
     }
 }

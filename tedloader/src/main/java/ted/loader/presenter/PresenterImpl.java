@@ -7,8 +7,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-import ted.loader.interfaces.IModel;
-import ted.loader.interfaces.IPresenter;
+import ted.loader.model.IModel;
 import ted.loader.interfaces.IScheduler;
 import ted.loader.interfaces.IView;
 import ted.loader.model.ModelImpl;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
  * Created by retor on 05.05.2015.
  */
 public class PresenterImpl implements IPresenter {
-    IModel<Channel> model;
+    IModel<ArrayList<Channel>> model;
     IView<Channel> view;
     ArrayList<Channel> items = new ArrayList<Channel>();
     IScheduler schedulers;
@@ -68,11 +67,6 @@ public class PresenterImpl implements IPresenter {
                         view.update(items);
                     }
                 });
-    }
-
-    @Override
-    public void getItem(String url) {
-        model.getItem(url);
     }
 }
 

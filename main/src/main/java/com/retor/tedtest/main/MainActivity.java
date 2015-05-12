@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.parserlib.beans.Channel;
-import ted.loader.interfaces.IPresenter;
+import ted.loader.presenter.IPresenter;
 import ted.loader.interfaces.IView;
 import ted.loader.presenter.PresenterImpl;
 
@@ -33,7 +33,7 @@ public class MainActivity extends FragmentActivity implements IView<Channel> {
         adapter = new MAdapter(this);
         pd = new ProgressDialog(this);
         recyclerView = (RecyclerView) findViewById(R.id.recycle);
-        final IPresenter presenter = new PresenterImpl(this);
+        IPresenter presenter = new PresenterImpl(this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -69,10 +69,10 @@ public class MainActivity extends FragmentActivity implements IView<Channel> {
     @Override
     public void update(ArrayList<Channel> data) {
         Log.d("MainAcrtivity", data.toString());
-        adapter.setItems(data);
+        adapter.setItems(data.get(0).getItems());
         recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
         pd.dismiss();
+        adapter.notifyDataSetChanged();
     }
 
     @Override

@@ -1,9 +1,8 @@
-package ted.loader.interfaces;
+package ted.loader.presenter;
 
 /**
  * Created by retor on 05.05.2015.
  */
 public interface IPresenter {
-    void getItem(String url);
     void getData(String url);
 }

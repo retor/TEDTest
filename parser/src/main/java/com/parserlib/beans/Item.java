@@ -1,78 +1,38 @@
 package com.parserlib.beans;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Entity;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import com.parserlib.exceptions.ParserException;
+import org.w3c.dom.*;
 
 import java.util.ArrayList;
 
 /**
  * Created by retor on 07.05.2015.
  */
-public class Item {
+public class Item implements IFiller{
     private String title;
     private String link;
     private String pubDate;
     private String description;
-    private String imageiTunes;
+    private String imageTunes;
     private String durationiTunes;
     private Enclosure enclosure;
-    private ArrayList<Media> content;
+    private ArrayList<Media> content = new ArrayList<Media>();
     private Thumbnail thumbnail;
 
-    public Item() {
-    }
-
-    public Item(ArrayList<Media> content, String description, String durationiTunes, Enclosure enclosure, String imageiTunes, String link, String pubDate, Thumbnail thumbnail, String title) {
+    public Item(ArrayList<Media> content, String description, String durationiTunes, Enclosure enclosure, String imageTunes, String link, String pubDate, Thumbnail thumbnail, String title) {
         this.content = content;
         this.description = description;
         this.durationiTunes = durationiTunes;
         this.enclosure = enclosure;
-        this.imageiTunes = imageiTunes;
+        this.imageTunes = imageTunes;
         this.link = link;
         this.pubDate = pubDate;
         this.thumbnail = thumbnail;
         this.title = title;
     }
 
-    public Item(Node item) {
-        try {
-            if (item.getNodeType() == Node.ELEMENT_NODE) {
-                Element root = (Element) item;
-                int l = root.getChildNodes().getLength();
-                NodeList cl = item.getChildNodes();
-                for (int i = 0; i < l; i++) {
-                    String rr = cl.item(i).getLocalName() + cl.item(i).getNodeType() + cl.item(i).getNodeName();
-                    rr.toString();
-                    if (cl.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("title"))
-                            this.title = cl.item(i).getChildNodes().item(0).getNodeValue();
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("description"))
-                            this.description = cl.item(i).getChildNodes().item(0).getNodeValue();
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("pubDate"))
-                            this.pubDate = cl.item(i).getChildNodes().item(0).getNodeValue();
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("imageiTunes"))
-                            this.imageiTunes = cl.item(i).getChildNodes().item(0).getNodeValue();
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("durationiTunes"))
-                            this.durationiTunes = cl.item(i).getChildNodes().item(0).getNodeValue();
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("link"))
-                            this.link = cl.item(i).getChildNodes().item(0).getNodeValue();
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("enclosure"))
-                            this.enclosure = new Enclosure(cl.item(i));
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("thumbnail"))
-                            this.thumbnail = new Thumbnail(cl.item(i));
-                        if (cl.item(i).getNodeName().equalsIgnoreCase("media"))
-                            this.content.add(new Media(cl.item(i)));
-                    }
-                    if (cl.item(i).getNodeType() == Node.ENTITY_NODE) {
-                        Entity tmp = (Entity) cl.item(i);
-                    }
-                }
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+    public Item(Node item) throws ParserException {
+        fill(item);
     }
 
     public ArrayList<Media> getContent() {
@@ -107,12 +67,12 @@ public class Item {
         this.enclosure = enclosure;
     }
 
-    public String getImageiTunes() {
-        return imageiTunes;
+    public String getImageTunes() {
+        return imageTunes;
     }
 
-    public void setImageiTunes(String imageiTunes) {
-        this.imageiTunes = imageiTunes;
+    public void setImageTunes(String imageiTunes) {
+        this.imageTunes = imageiTunes;
     }
 
     public String getLink() {
@@ -145,5 +105,54 @@ public class Item {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @Override
+    public void fill(Node item) throws ParserException {
+        try {
+            if (item.getNodeType() == Node.ELEMENT_NODE) {
+                Element root = (Element) item;
+                NodeList cl = root.getChildNodes();
+                int l = cl.getLength();
+                for (int i = 0; i < l; i++) {
+                    Node tmp = cl.item(i);
+                    if (tmp.getNodeType() == Node.ELEMENT_NODE) {
+                        if (tmp.getNodeName().equalsIgnoreCase("title"))
+                            this.title = tmp.getChildNodes().item(0).getNodeValue();
+                        if (tmp.getNodeName().equalsIgnoreCase("description"))
+                            this.description = tmp.getChildNodes().item(0).getNodeValue();
+                        if (tmp.getNodeName().equalsIgnoreCase("pubDate"))
+                            this.pubDate = tmp.getChildNodes().item(0).getNodeValue();
+                        if (tmp.getNodeName().equalsIgnoreCase("itunes:image"))
+                            this.imageTunes = tmp.getAttributes().getNamedItem("url").getNodeValue();
+                        if (tmp.getNodeName().equalsIgnoreCase("itunes:duration"))
+                            this.durationiTunes = tmp.getChildNodes().item(0).getNodeValue();
+                        if (tmp.getNodeName().equalsIgnoreCase("link"))
+                            this.link = tmp.getChildNodes().item(0).getNodeValue();
+                        if (tmp.getNodeName().equalsIgnoreCase("enclosure"))
+                            this.enclosure = new Enclosure(tmp);
+                        if (tmp.getNodeName().equalsIgnoreCase("media:group")) {
+                            int al = tmp.getChildNodes().getLength();
+                            Element tmpMedia = (Element) tmp;
+                            NodeList childs = tmpMedia.getChildNodes();
+                            for (int a = 0; a < al; a++) {
+                                Node tmpM = childs.item(a);
+                                if (tmpM.getNodeType()==Node.ELEMENT_NODE){
+                                    if (tmpM.getNodeName()!= null && tmpM.getNodeName().equalsIgnoreCase("media:content")) {
+                                        tmpM.getLocalName();
+                                        this.content.add(new Media(tmpM));
+                                    }
+                                    if (tmpM.getNodeName() != null && tmpM.getNodeName().equalsIgnoreCase("media:thumbnail")) {
+                                        this.thumbnail = new Thumbnail(tmpM);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (NullPointerException e) {
+            throw new ParserException("Item", e);
+        }
     }
 }
