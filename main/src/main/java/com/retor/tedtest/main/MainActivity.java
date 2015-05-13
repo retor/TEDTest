@@ -1,10 +1,8 @@
 package com.retor.tedtest.main;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +10,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.parserlib.beans.Channel;
-import ted.loader.presenter.IPresenter;
+import com.retor.tedtest.main.ted.DialogsBuilder;
 import ted.loader.interfaces.IView;
+import ted.loader.presenter.IPresenter;
 import ted.loader.presenter.PresenterImpl;
 
 import java.util.ArrayList;
@@ -31,44 +30,35 @@ public class MainActivity extends FragmentActivity implements IView<Channel> {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         adapter = new MAdapter(this);
-        pd = new ProgressDialog(this);
         recyclerView = (RecyclerView) findViewById(R.id.recycle);
         IPresenter presenter = new PresenterImpl(this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-        pd.setMessage("Loading rss...");
         presenter.getData(mainUrl);
+        pd = DialogsBuilder.createProgress(this, "Loading rss...");
         pd.show();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void update(ArrayList<Channel> data) {
-        Log.d("MainAcrtivity", data.toString());
+        Log.d("MainActivity", data.toString());
         adapter.setItems(data.get(0).getItems());
         recyclerView.setAdapter(adapter);
         pd.dismiss();
@@ -84,11 +74,6 @@ public class MainActivity extends FragmentActivity implements IView<Channel> {
     public void onError(Throwable t) {
         if (pd.isShowing())
             pd.dismiss();
-        new AlertDialog.Builder(this).setMessage(t.getLocalizedMessage()).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                MainActivity.this.finish();
-            }
-        }).create().show();//TODO Error show
+        DialogsBuilder.createAlert(this, t.getLocalizedMessage()).show();
     }
 }

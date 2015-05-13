@@ -1,19 +1,16 @@
-package com.retor.tedtest.main.ted;
+package com.retor.tedtest.main;
 
-import android.support.v7.widget.*;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.retor.tedtest.main.R;
 
 /**
  * Created by retor on 05.05.2015.
  */
 public class MViewHolder extends RecyclerView.ViewHolder {
-
     TextView headerText;
-    //    VideoView mainVideo;
     TextView description;
     TextView duration;
     TextView pubdate;
@@ -23,7 +20,6 @@ public class MViewHolder extends RecyclerView.ViewHolder {
     public MViewHolder(View itemView) {
         super(itemView);
         headerText = (TextView) itemView.findViewById(R.id.title);
-//        mainVideo = (VideoView)itemView.findViewById(R.id.video);
         description = (TextView) itemView.findViewById(R.id.description);
         duration = (TextView) itemView.findViewById(R.id.duration);
         pubdate = (TextView) itemView.findViewById(R.id.pubdate);
