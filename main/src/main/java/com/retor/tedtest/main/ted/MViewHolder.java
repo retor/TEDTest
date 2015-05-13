@@ -1,6 +1,7 @@
 package com.retor.tedtest.main.ted;
 
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.*;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ public class MViewHolder extends RecyclerView.ViewHolder {
     TextView duration;
     TextView pubdate;
     ImageView thumb;
+    android.support.v7.widget.CardView card;
 
     public MViewHolder(View itemView) {
         super(itemView);
@@ -25,7 +27,12 @@ public class MViewHolder extends RecyclerView.ViewHolder {
         description = (TextView) itemView.findViewById(R.id.description);
         duration = (TextView) itemView.findViewById(R.id.duration);
         pubdate = (TextView) itemView.findViewById(R.id.pubdate);
-        thumb = (ImageView)itemView.findViewById(R.id.thumb);
+        thumb = (ImageView) itemView.findViewById(R.id.thumb);
+        card = (CardView)itemView.findViewById(R.id.card_view);
+    }
+
+    public CardView getCard() {
+        return card;
     }
 
     public TextView getDuration() {
