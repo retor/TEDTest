@@ -1,10 +1,10 @@
-package com.parserlib.worker;
+package com.parser.worker;
 
-import com.parserlib.beans.Channel;
-import com.parserlib.exceptions.LoaderException;
-import com.parserlib.exceptions.ParserException;
-import com.parserlib.loader.ILoader;
-import com.parserlib.parser.IParser;
+import com.parser.beans.Channel;
+import com.parser.exceptions.LoaderException;
+import com.parser.exceptions.ParserException;
+import com.parser.loader.ILoader;
+import com.parser.parser.IParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 

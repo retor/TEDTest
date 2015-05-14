@@ -1,7 +1,7 @@
 package ted.loader.presenter;
 
 
-import com.parserlib.beans.Channel;
+import com.parser.beans.Channel;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;

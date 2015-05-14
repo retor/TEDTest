@@ -1,7 +1,7 @@
-package com.parserlib.beans;
+package com.parser.beans;
 
 
-import com.parserlib.exceptions.ParserException;
+import com.parser.exceptions.ParserException;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 

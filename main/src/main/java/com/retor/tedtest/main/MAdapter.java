@@ -1,19 +1,18 @@
 package com.retor.tedtest.main;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.parserlib.beans.Item;
+import com.parser.beans.Item;
+import com.retor.tedtest.main.ted.DialogsBuilder;
 import com.retor.tedtest.main.ted.mediafragment.MFragment;
 import com.squareup.picasso.Picasso;
 
@@ -74,13 +73,7 @@ public class MAdapter extends RecyclerView.Adapter<MViewHolder> {
                 }
             });
         } else {
-            new AlertDialog.Builder(context).setMessage("Null Array or item Exception").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            }).create().show();
-
+            DialogsBuilder.createAlert(context, "Null Array or item Exception").show();
         }
     }
 
@@ -88,5 +81,4 @@ public class MAdapter extends RecyclerView.Adapter<MViewHolder> {
     public int getItemCount() {
         return items.size();
     }
-
 }

@@ -1,7 +1,7 @@
-package com.parserlib.parser;
+package com.parser.parser;
 
-import com.parserlib.beans.Channel;
-import com.parserlib.exceptions.ParserException;
+import com.parser.beans.Channel;
+import com.parser.exceptions.ParserException;
 import org.w3c.dom.Node;
 
 /**

@@ -1,13 +1,13 @@
 package ted.loader.model;
 
 
-import com.parserlib.beans.Channel;
-import com.parserlib.exceptions.LoaderException;
-import com.parserlib.exceptions.ParserException;
-import com.parserlib.loader.RssLoader;
-import com.parserlib.parser.Parser;
-import com.parserlib.worker.IWorker;
-import com.parserlib.worker.MainWorker;
+import com.parser.beans.Channel;
+import com.parser.exceptions.LoaderException;
+import com.parser.exceptions.ParserException;
+import com.parser.loader.RssLoader;
+import com.parser.parser.Parser;
+import com.parser.worker.IWorker;
+import com.parser.worker.MainWorker;
 import rx.Observable;
 import rx.Subscriber;
 

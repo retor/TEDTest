@@ -1,4 +1,4 @@
-package com.parserlib.exceptions;
+package com.parser.exceptions;
 
 /**
  * Created by retor on 07.05.2015.

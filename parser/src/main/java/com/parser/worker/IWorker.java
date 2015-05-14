@@ -1,9 +1,9 @@
-package com.parserlib.worker;
+package com.parser.worker;
 
-import com.parserlib.exceptions.LoaderException;
-import com.parserlib.exceptions.ParserException;
-import com.parserlib.loader.ILoader;
-import com.parserlib.parser.IParser;
+import com.parser.exceptions.LoaderException;
+import com.parser.exceptions.ParserException;
+import com.parser.loader.ILoader;
+import com.parser.parser.IParser;
 
 /**
  * Created by retor on 07.05.2015.

@@ -1,6 +1,6 @@
-package com.parserlib.loader;
+package com.parser.loader;
 
-import com.parserlib.exceptions.LoaderException;
+import com.parser.exceptions.LoaderException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

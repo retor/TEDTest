@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RadioButton;
-import com.parserlib.beans.Media;
+import com.parser.beans.Media;
 import com.retor.tedtest.main.R;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
-package com.parserlib.loader;
+package com.parser.loader;
 
-import com.parserlib.exceptions.LoaderException;
+import com.parser.exceptions.LoaderException;
 
 /**
  * Created by retor on 07.05.2015.

@@ -9,7 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.parserlib.beans.Channel;
+import com.parser.beans.Channel;
 import com.retor.tedtest.main.ted.DialogsBuilder;
 import ted.loader.interfaces.IView;
 import ted.loader.presenter.IPresenter;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity implements IView<Channel> {
 
-    String mainUrl = "http://www.ted.com/themes/rss/id/25";//"http://www.ted.com/talks/rss";//"http://feeds.feedburner.com/tedtalks_video";http://www.ted.com/themes/rss/id/25
+    String mainUrl = "http://www.ted.com/themes/rss/id/6";// "http://www.ted.com/themes/rss/id/25";//"http://www.ted.com/talks/rss";//"http://feeds.feedburner.com/tedtalks_video";http://www.ted.com/themes/rss/id/25
     ProgressDialog pd;
     private RecyclerView recyclerView;
     private MAdapter adapter;
