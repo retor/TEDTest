@@ -13,24 +13,44 @@ import java.util.ArrayList;
 /**
  * Created by retor on 07.05.2015.
  */
-public class MainWorker implements IWorker<ArrayList<Channel>> {
+public class MainWorker implements IWorker<Channel> {
     private ILoader<Document> loader;
-    private IParser parser;
+    private IParser<Channel> parser;
 
-    public MainWorker(ILoader loader, IParser parser) {
+
+    public MainWorker(ILoader<Document> loader, IParser<Channel> parser) {
         this.loader = loader;
         this.parser = parser;
     }
 
     @Override
-    public ArrayList<Channel> getData(String url) throws LoaderException, ParserException {
-        ArrayList<Channel> out = new ArrayList<Channel>();
+    public ArrayList<Channel> getData(String... url) throws LoaderException, ParserException {
+        ArrayList<Channel> out = new ArrayList<>();
+        if (url.length > 1) {
+            Channel tmp;
+            for (int i = 0; i < url.length; i++) {
+                tmp = getSingleData(url[i]);
+                tmp.setRssUrl(url[i]);
+                out.add(tmp);
+            }
+        } else {
+            Document doc = loader.getResponse(url[0]);
+            NodeList channels = doc.getElementsByTagName("channel");
+            for (int i = 0; i < channels.getLength(); i++) {
+                Channel tmp = parser.getItem(channels.item(i));
+                tmp.setRssUrl(url[0]);
+                out.add(tmp);
+            }
+        }
+        return out;
+    }
+
+    @Override
+    public Channel getSingleData(String url) throws LoaderException, ParserException {
         Document doc = loader.getResponse(url);
         NodeList channels = doc.getElementsByTagName("channel");
-        for (int i = 0; i < channels.getLength(); i++) {
-            Channel tmp = parser.getChanel(channels.item(i));
-            out.add(tmp);
-        }
+        Channel out = parser.getItem(channels.item(0));
+        out.setRssUrl(url);
         return out;
     }
 

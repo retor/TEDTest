@@ -1,11 +1,9 @@
 apply plugin: 'idea'
 apply plugin: 'java'
 
-
 repositories {
     jcenter()
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
 }

@@ -1,13 +1,11 @@
 package com.parser.beans;
 
-import com.parser.exceptions.ParserException;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import java.io.Serializable;
 
 /**
  * Created by retor on 07.05.2015.
  */
-public class Media implements IFiller{
+public class Media implements Serializable {
     private String url;
     private long duration;
     private int fileSize;
@@ -20,8 +18,8 @@ public class Media implements IFiller{
         this.url = url;
     }
 
-    public Media(Node item) throws ParserException {
-        fill(item);
+    public Media() {
+
     }
 
     public int getBitRate() {
@@ -54,20 +52,5 @@ public class Media implements IFiller{
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    @Override
-    public void fill(Node item) throws ParserException {
-        try {
-            if (item.getNodeType() == Node.ELEMENT_NODE) {
-                NamedNodeMap attributes = item.getAttributes();
-                this.url = attributes.getNamedItem("url").getNodeValue();
-                this.bitRate = Integer.valueOf(attributes.getNamedItem("bitrate").getNodeValue());
-                this.fileSize = Integer.valueOf(attributes.getNamedItem("fileSize").getNodeValue());
-                this.duration = Long.valueOf(attributes.getNamedItem("duration").getNodeValue());
-            }
-        } catch (NullPointerException e) {
-            throw new ParserException("Media", e);
-        }
     }
 }

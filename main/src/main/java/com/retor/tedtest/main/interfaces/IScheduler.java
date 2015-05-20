@@ -1,4 +1,4 @@
-package ted.loader.interfaces;
+package com.retor.tedtest.main.interfaces;
 
 import rx.Scheduler;
 
@@ -7,5 +7,6 @@ import rx.Scheduler;
  */
 public interface IScheduler {
     Scheduler getMain();
+
     Scheduler getBack();
 }

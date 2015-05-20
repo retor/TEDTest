@@ -14,8 +14,8 @@ import java.io.IOException;
  */
 public class RssLoader implements ILoader<Document> {
 
-    DocumentBuilderFactory factory;
-    DocumentBuilder builder;
+    private DocumentBuilderFactory factory;
+    private DocumentBuilder builder;
 
     public RssLoader() {
         this.factory = DocumentBuilderFactory.newInstance();
@@ -27,19 +27,18 @@ public class RssLoader implements ILoader<Document> {
         try {
             this.builder = factory.newDocumentBuilder();
             out = builder.parse(url);
-//            out.getDocumentElement().getChildNodes();
         } catch (ParserConfigurationException e) {
             throw new LoaderException("Loaded response ParserConfigurationException", e);
         } catch (SAXException e) {
             throw new LoaderException("Loaded response SAXException", e);
         } catch (IOException e) {
             throw new LoaderException("Loaded response IOException", e);
-        }finally {
+        } finally {
             builder.reset();
         }
         if (out != null) {
             return out;
-        }else{
+        } else {
             throw new LoaderException("Loaded response is NULL");
         }
     }

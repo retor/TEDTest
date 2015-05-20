@@ -1,14 +1,11 @@
 package com.parser.beans;
 
-import com.parser.exceptions.ParserException;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.io.Serializable;
 
 /**
  * Created by retor on 07.05.2015.
  */
-public class ChannelImage implements IFiller {
+public class ChannelImage implements Serializable {
     private String url;
     private String title;
     private String link;
@@ -19,8 +16,8 @@ public class ChannelImage implements IFiller {
         this.url = url;
     }
 
-    public ChannelImage(Node item) throws ParserException {
-        fill(item);
+    public ChannelImage() {
+
     }
 
     public String getTitle() {
@@ -45,29 +42,5 @@ public class ChannelImage implements IFiller {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    @Override
-    public void fill(Node item) throws ParserException {
-        try {
-            if (item.getNodeType() == Node.ELEMENT_NODE) {
-                Element root = (Element) item;
-                NodeList cl = root.getChildNodes();
-                int l = cl.getLength();
-                for (int i = 0; i < l; i++) {
-                    Node tmp = cl.item(i);
-                    if (tmp.getNodeType() == Node.ELEMENT_NODE) {
-                        if (tmp.getNodeName().equalsIgnoreCase("url"))
-                            this.url = tmp.getChildNodes().item(0).getNodeValue();
-                        if (tmp.getNodeName().equalsIgnoreCase("title"))
-                            this.title = tmp.getChildNodes().item(0).getNodeValue();
-                        if (tmp.getNodeName().equalsIgnoreCase("link"))
-                            this.link = tmp.getChildNodes().item(0).getNodeValue();
-                    }
-                }
-            }
-        } catch (NullPointerException e) {
-            throw new ParserException("ChannelImage", e);
-        }
     }
 }

@@ -1,14 +1,12 @@
 package com.parser.beans;
 
-import com.parser.exceptions.ParserException;
-import org.w3c.dom.*;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by retor on 07.05.2015.
  */
-public class Item implements IFiller{
+public class Item implements Serializable {
     private String title;
     private String link;
     private String pubDate;
@@ -31,16 +29,15 @@ public class Item implements IFiller{
         this.title = title;
     }
 
-    public Item(Node item) throws ParserException {
-        fill(item);
+    public Item() {
     }
 
     public ArrayList<Media> getContent() {
         return content;
     }
 
-    public void setContent(ArrayList<Media> content) {
-        this.content = content;
+    public void addContentItem(Media content) {
+        this.content.add(content);
     }
 
     public String getDescription() {
@@ -105,54 +102,5 @@ public class Item implements IFiller{
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    @Override
-    public void fill(Node item) throws ParserException {
-        try {
-            if (item.getNodeType() == Node.ELEMENT_NODE) {
-                Element root = (Element) item;
-                NodeList cl = root.getChildNodes();
-                int l = cl.getLength();
-                for (int i = 0; i < l; i++) {
-                    Node tmp = cl.item(i);
-                    if (tmp.getNodeType() == Node.ELEMENT_NODE) {
-                        if (tmp.getNodeName().equalsIgnoreCase("title"))
-                            this.title = tmp.getChildNodes().item(0).getNodeValue();
-                        if (tmp.getNodeName().equalsIgnoreCase("description"))
-                            this.description = tmp.getChildNodes().item(0).getNodeValue();
-                        if (tmp.getNodeName().equalsIgnoreCase("pubDate"))
-                            this.pubDate = tmp.getChildNodes().item(0).getNodeValue();
-                        if (tmp.getNodeName().equalsIgnoreCase("itunes:image"))
-                            this.imageTunes = tmp.getAttributes().getNamedItem("url").getNodeValue();
-                        if (tmp.getNodeName().equalsIgnoreCase("itunes:duration"))
-                            this.durationiTunes = tmp.getChildNodes().item(0).getNodeValue();
-                        if (tmp.getNodeName().equalsIgnoreCase("link"))
-                            this.link = tmp.getChildNodes().item(0).getNodeValue();
-                        if (tmp.getNodeName().equalsIgnoreCase("enclosure"))
-                            this.enclosure = new Enclosure(tmp);
-                        if (tmp.getNodeName().equalsIgnoreCase("media:group")) {
-                            int al = tmp.getChildNodes().getLength();
-                            Element tmpMedia = (Element) tmp;
-                            NodeList childs = tmpMedia.getChildNodes();
-                            for (int a = 0; a < al; a++) {
-                                Node tmpM = childs.item(a);
-                                if (tmpM.getNodeType()==Node.ELEMENT_NODE){
-                                    if (tmpM.getNodeName()!= null && tmpM.getNodeName().equalsIgnoreCase("media:content")) {
-                                        tmpM.getLocalName();
-                                        this.content.add(new Media(tmpM));
-                                    }
-                                    if (tmpM.getNodeName() != null && tmpM.getNodeName().equalsIgnoreCase("media:thumbnail")) {
-                                        this.thumbnail = new Thumbnail(tmpM);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (NullPointerException e) {
-            throw new ParserException("Item", e);
-        }
     }
 }

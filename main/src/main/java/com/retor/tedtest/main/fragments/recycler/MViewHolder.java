@@ -1,10 +1,11 @@
-package com.retor.tedtest.main;
+package com.retor.tedtest.main.fragments.recycler;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.retor.tedtest.main.R;
 
 /**
  * Created by retor on 05.05.2015.
@@ -24,7 +25,7 @@ public class MViewHolder extends RecyclerView.ViewHolder {
         duration = (TextView) itemView.findViewById(R.id.duration);
         pubdate = (TextView) itemView.findViewById(R.id.pubdate);
         thumb = (ImageView) itemView.findViewById(R.id.thumb);
-        card = (CardView)itemView.findViewById(R.id.card_view);
+        card = (CardView) itemView.findViewById(R.id.card_view);
     }
 
     public CardView getCard() {
