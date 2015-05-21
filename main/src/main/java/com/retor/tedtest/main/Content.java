@@ -31,6 +31,21 @@ public class Content implements Serializable {
         this.channels.add(channel);
     }
 
+    public void setChannels(ArrayList<Channel> channels) {
+        this.channels = channels;
+    }
+
+    public void addChannelWithCheck(Channel channel){
+        if (hasChannels())
+        for (int i = 0; i < channels.size(); i++) {
+            String tmpTitle = channels.get(i).getTitle();
+            if (channel.getTitle().equalsIgnoreCase(tmpTitle)) {
+                channels.remove(i);
+                channels.add(i, channel);
+            }
+        }
+    }
+
     public boolean hasChannels() {
         return channels != null && !channels.isEmpty();
     }

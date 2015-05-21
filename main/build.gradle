@@ -15,14 +15,20 @@ repositories {
 }
 
 android {
+    signingConfigs {
+        retor {
+
+        }
+    }
     compileSdkVersion 21
     buildToolsVersion '22.0.1'
     defaultConfig {
         applicationId "com.retor.tedtest.main"
         minSdkVersion 17
         targetSdkVersion 21
+        versionName '1.0'
         versionCode 1
-        versionName "1.0"
+        signingConfig signingConfigs.retor
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -30,8 +36,14 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.retor
+            debuggable false
+            jniDebuggable false
+            zipAlignEnabled true
+            renderscriptDebuggable false
+            pseudoLocalesEnabled false
         }
     }
     productFlavors {

@@ -71,11 +71,16 @@ public class NewsList extends Fragment implements IView<Channel> {
 
     private void initSwipeRefresh(final SwipeRefreshLayout input) {
         input.setVerticalScrollBarEnabled(true);
+
         input.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 input.setRefreshing(false);
-                presenter.getData(channel.getRssUrl());
+                if (channel!=null){
+                    presenter.getData(channel.getRssUrl());
+                }else{
+                    presenter.getData(null);
+                }
             }
         });
     }
@@ -97,7 +102,7 @@ public class NewsList extends Fragment implements IView<Channel> {
         channel = item;
         adapter.setItems(channel.getItems());
         adapter.notifyDataSetChanged();
-        recyclerView.setVerticalScrollbarPosition(0);
+        recyclerView.scrollToPosition(0);
     }
 
     @Override

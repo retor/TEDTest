@@ -22,11 +22,12 @@ import com.retor.tedtest.dataloader.DataLoader;
 import com.retor.tedtest.dataloader.IPresenter;
 import com.retor.tedtest.main.fragments.recycler.NewsList;
 import com.retor.tedtest.main.interfaces.IView;
+import rx.Observer;
 
 import java.util.ArrayList;
 
 
-public class MainActivity extends FragmentActivity implements IView<Channel>, IPresenter {
+public class MainActivity extends FragmentActivity implements Observer<ArrayList<Channel>>, IPresenter {
 
     private String mainUrl = "http://www.ted.com/themes/rss/id/6";
     private String[] mainUrls = {mainUrl, "http://www.ted.com/themes/rss/id/25", "http://www.ted.com/themes/rss/id/5", "http://www.ted.com/themes/rss/id/2"};
@@ -36,6 +37,7 @@ public class MainActivity extends FragmentActivity implements IView<Channel>, IP
     private Fragment newsList;
     private Drawer.Result drawer;
     private int lastPosition = 0;
+    private boolean firstLoad = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +53,11 @@ public class MainActivity extends FragmentActivity implements IView<Channel>, IP
     private void restoreBundle(Bundle savedInstanceState) {
         content = (Content) savedInstanceState.getSerializable("array");
         newsList = getSupportFragmentManager().findFragmentByTag("list");
+        firstLoad = savedInstanceState.getBoolean("state", false);
         view = (IView<Channel>) newsList;
         if (content.hasChannels()) {
             lastPosition = savedInstanceState.getInt("position", 0);
-            loadData(content.getChannels());
+            firstLoad();
         } else {
             takeData(mainUrls);
         }
@@ -62,8 +65,10 @@ public class MainActivity extends FragmentActivity implements IView<Channel>, IP
 
     private void nullBundle() {
         newsList = new NewsList();
+        if (getSupportFragmentManager().findFragmentByTag("list")==null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.frame, newsList, "list").commit();
+        }
         view = (IView<Channel>) newsList;
-        getSupportFragmentManager().beginTransaction().add(R.id.frame, newsList, "list").commit();
         takeData(mainUrls);
     }
 
@@ -78,7 +83,6 @@ public class MainActivity extends FragmentActivity implements IView<Channel>, IP
             @Override
             public void onDismiss(DialogInterface dialog) {
                 dialog.dismiss();
-                MainActivity.this.finish();
             }
         });
         al.show();
@@ -99,7 +103,11 @@ public class MainActivity extends FragmentActivity implements IView<Channel>, IP
     private void takeData(String... url) {
         if (isNetworkConnected()) {
             IPresenter presenter = new DataLoader(this, this);
-            presenter.getData(url);
+            if (url == null) {
+                presenter.getData(mainUrls);
+            } else {
+                presenter.getData(url);
+            }
             createShowProgress();
         } else {
             showNetworkAlert();
@@ -108,19 +116,18 @@ public class MainActivity extends FragmentActivity implements IView<Channel>, IP
 
     private void reLoad(Channel item) {
         view.loadItem(item);
-        for (int i = 0; i < content.getChannels().size(); i++) {
-            String tmpTitle = content.getChannel(i).getTitle();
-            if (item.getTitle().equalsIgnoreCase(tmpTitle)) {
-                content.getChannels().remove(i);
-                content.getChannels().add(i, item);
-            }
-        }
+        content.addChannelWithCheck(item);
+        clearProgressDialog();
     }
 
-    private void firstLoad(Channel item) {
-        content = new Content(new ArrayList<Channel>());
-        content.addChannel(item);
-        reLoad(item);
+    private void firstLoad() {
+        drawer = initDrawer(content.getChannels());
+        if (firstLoad) {
+            drawer.openDrawer();
+            firstLoad = false;
+        }
+        view.loadItem(content.getChannel(lastPosition));
+        clearProgressDialog();
     }
 
     private Drawer.Result initDrawer(ArrayList<Channel> data) {
@@ -132,12 +139,26 @@ public class MainActivity extends FragmentActivity implements IView<Channel>, IP
             items[i] = new DividerDrawerItem();
             i++;
         }
-        return new Drawer()
+        Drawer.Result out = new Drawer()
                 .withActivity(this)
                 .withActionBarDrawerToggle(true)
                 .withHeader(R.layout.fragment_navigation_drawer)
                 .addDrawerItems(items)
+                .addDrawerItems(new PrimaryDrawerItem().withName("Refresh All").withIcon(FontAwesome.Icon.faw_refresh).withIdentifier(i))
                 .build();
+        out.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+                if (content.getChannels().size() > i / 2) {
+                    lastPosition = i / 2;
+                    MainActivity.this.view.loadItem(content.getChannels().get(i / 2));
+                }
+                if (content.getChannels().size() == i / 2) {
+                    getData(mainUrls);
+                }
+            }
+        });
+        return out;
     }
 
     @Override
@@ -156,49 +177,39 @@ public class MainActivity extends FragmentActivity implements IView<Channel>, IP
     }
 
     @Override
-    public void loadData(ArrayList<Channel> data) {//TODO Drawer
-        content = new Content(data);
-        drawer = initDrawer(data);
-        drawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
-                lastPosition = i / 2;
-                MainActivity.this.view.loadItem(content.getChannels().get(i / 2));
-            }
-        });
-        drawer.openDrawer();
-        view.loadItem(content.getChannel(lastPosition));
-        clearProgressDialog();
+    public void onCompleted() {
+        if (content != null)
+            firstLoad();
     }
 
     @Override
-    public void loadItem(Channel item) {
-        if (content == null) {
-            firstLoad(item);
-        } else {
-            reLoad(item);
+    public void onError(Throwable e) {
+        Log.d("Error", e.getLocalizedMessage());
+        e.printStackTrace();
+        clearProgressDialog();
+        DialogsBuilder.createAlert(this, "Opss... ").show();
+        view.onError(e);
+    }
+
+    @Override
+    public void onNext(ArrayList<Channel> channels) {
+        if (channels.size() == 1) {
+            reLoad(channels.get(0));
+        } else if (channels.size() > 1) {
+            content = new Content(channels);
         }
-        clearProgressDialog();
-    }
-
-    @Override
-    public void onError(Throwable t) {
-        Log.d("Error", t.getLocalizedMessage());
-        clearProgressDialog();
-        DialogsBuilder.createAlert(this, t.getLocalizedMessage()).show();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (content != null) {
             outState.putSerializable("array", content);
-        } else {
-            getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentByTag("list")).commit();
-        }
-        if (lastPosition > 0)
             outState.putInt("position", lastPosition);
+            outState.putBoolean("state", firstLoad);
+        }
         clearProgressDialog();
         super.onSaveInstanceState(outState);
+
     }
 
     @Override
@@ -208,7 +219,7 @@ public class MainActivity extends FragmentActivity implements IView<Channel>, IP
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen())
+        if (drawer != null && drawer.isDrawerOpen())
             drawer.closeDrawer();
         else
             super.onBackPressed();

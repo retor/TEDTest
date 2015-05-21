@@ -65,6 +65,7 @@ public class MFragment extends DialogFragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
                     startActivity(new Intent(getActivity(), VideoPlay.class).putExtra("url", item.getContent().get(position - 1).getUrl()));
+                    dismiss();
                 }
             }
 

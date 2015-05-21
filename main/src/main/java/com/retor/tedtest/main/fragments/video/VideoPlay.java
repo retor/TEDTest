@@ -2,9 +2,11 @@ package com.retor.tedtest.main.fragments.video;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -57,7 +59,7 @@ public class VideoPlay extends Activity {
                 onDestroy();
             }
         });
-        vv.setOnTouchListener(new View.OnTouchListener() {
+        videoView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -69,28 +71,48 @@ public class VideoPlay extends Activity {
                 return false;
             }
         });
+        videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                if (dialog.isShowing())
+                    dialog.dismiss();
+                getAlertDialog().show();
+                return true;
+            }
+        });
+    }
+
+    private AlertDialog getAlertDialog() {
+        AlertDialog al = DialogsBuilder.createAlert(VideoPlay.this, "Bad file or connection is lost");
+        al.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                VideoPlay.this.finish();
+            }
+        });
+        return al;
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (vv.isPlaying()) {
             videoStop();
         }
+        super.onDestroy();
     }
 
     private void videoStop() {
         vv.suspend();
         vv.stopPlayback();
         vv.destroyDrawingCache();
-
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        if (vv.isPlaying())
+        if (vv.isPlaying()) {
             videoStop();
+        }
+        super.onBackPressed();
     }
 
     @Override
