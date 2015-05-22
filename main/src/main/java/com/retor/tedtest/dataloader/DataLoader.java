@@ -1,6 +1,7 @@
 package com.retor.tedtest.dataloader;
 
 
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import com.parser.beans.Channel;
@@ -15,23 +16,24 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.android.observables.AndroidObservable;
-import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
 
 
 /**
  * Created by retor on 05.05.2015.
  */
-public class DataLoader implements IPresenter, Observer<ArrayList<Channel>>  {
+public class DataLoader implements IPresenter, Observer<List<Channel>>  {
     private IView<Channel> view;
     private FragmentActivity activity;
     private ArrayList<Channel> items;
     private IWorker<Channel> worker;
-    private Observer<ArrayList<Channel>> observer;
+    private Observer<List<Channel>> observer;
+    Handler h = new Handler();
 
     public DataLoader(IView<Channel> view, FragmentActivity activity) {
         this.view = view;
@@ -40,7 +42,7 @@ public class DataLoader implements IPresenter, Observer<ArrayList<Channel>>  {
         this.worker = new MainWorker(new RssLoader(), new Parser());
     }
 
-    public DataLoader(Observer<ArrayList<Channel>> observer, FragmentActivity activity) {
+    public DataLoader(Observer<List<Channel>> observer, FragmentActivity activity) {
         this.observer = observer;
         this.activity = activity;
         this.worker = new MainWorker(new RssLoader(), new Parser());
@@ -51,36 +53,18 @@ public class DataLoader implements IPresenter, Observer<ArrayList<Channel>>  {
     }
 
     @Override
-    public void getData(final String... url) {
+    public void getData(String... url) {
+        items = new ArrayList<>();
+        mainRequest(url).subscribeOn(Schedulers.io()).subscribe(observer);
+    }
 
-        AndroidObservable.bindActivity(activity, Observable.create(new Observable.OnSubscribe<ArrayList<Channel>>() {
+    private Observable<List<Channel>> mainRequest(String... url){
+        return AndroidObservable.bindActivity(activity, Observable.from(url).flatMap(new Func1<String, Observable<Channel>>() {
             @Override
-            public void call(final Subscriber<? super ArrayList<Channel>> subscriber) {
-                final ArrayList<Channel> out = new ArrayList<>();
-                Observable.from(url).flatMap(new Func1<String, Observable<Channel>>() {
-                    @Override
-                    public Observable<Channel> call(final String s) {
-                        return getChannel(s);
-                    }
-                }).subscribe(new Action1<Channel>() {
-                    @Override
-                    public void call(Channel channel) {
-                        out.add(channel);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        subscriber.onError(throwable);
-                    }
-                }, new Action0() {
-                    @Override
-                    public void call() {
-                        subscriber.onNext(out);
-                    }
-                });
-                subscriber.onCompleted();
+            public Observable<Channel> call(String s) {
+                return getChannel(s).observeOn(Schedulers.io()).subscribeOn(Schedulers.from(Executors.newCachedThreadPool()));
             }
-        })).subscribeOn(Schedulers.io()).subscribe(observer);
+        })).buffer(4);
     }
 
     private Observable<Channel> getChannel(final String url){
@@ -112,8 +96,8 @@ public class DataLoader implements IPresenter, Observer<ArrayList<Channel>>  {
     }
 
     @Override
-    public void onNext(ArrayList<Channel> channels) {
-        items = channels;
+    public void onNext(List<Channel> channels) {
+        items = (ArrayList<Channel>) channels;
     }
 }
 

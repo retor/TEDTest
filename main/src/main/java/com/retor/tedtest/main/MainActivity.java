@@ -25,9 +25,10 @@ import com.retor.tedtest.main.interfaces.IView;
 import rx.Observer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
-public class MainActivity extends FragmentActivity implements Observer<ArrayList<Channel>>, IPresenter {
+public class MainActivity extends FragmentActivity implements Observer<List<Channel>>, IPresenter {
 
     private String mainUrl = "http://www.ted.com/themes/rss/id/6";
     private String[] mainUrls = {mainUrl, "http://www.ted.com/themes/rss/id/25", "http://www.ted.com/themes/rss/id/5", "http://www.ted.com/themes/rss/id/2"};
@@ -192,11 +193,11 @@ public class MainActivity extends FragmentActivity implements Observer<ArrayList
     }
 
     @Override
-    public void onNext(ArrayList<Channel> channels) {
+    public void onNext(List<Channel> channels) {
         if (channels.size() == 1) {
             reLoad(channels.get(0));
         } else if (channels.size() > 1) {
-            content = new Content(channels);
+            content = new Content((ArrayList<Channel>)channels);
         }
     }
 
