@@ -17,5 +17,5 @@ public interface IWorker<T> {
 
     void setLoader(ILoader loader);
 
-    void setParser(IParser parser);
+    void setParser(IParser<T> parser);
 }

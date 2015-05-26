@@ -7,7 +7,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,11 +38,18 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
     private Drawer.Result drawer;
     private int lastPosition = 0;
     private boolean firstLoad = true;
+    private IPresenter presenter = new DataLoader(this, this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (getSupportFragmentManager().findFragmentByTag("list") == null) {
+            newsList = new NewsList();
+            getSupportFragmentManager().beginTransaction().add(R.id.frame, newsList, "list").commit();
+        }else{
+            newsList = getSupportFragmentManager().findFragmentByTag("list");
+        }
         if (savedInstanceState != null && savedInstanceState.getSerializable("array") != null) {
             restoreBundle(savedInstanceState);
         } else {
@@ -53,7 +59,6 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
 
     private void restoreBundle(Bundle savedInstanceState) {
         content = (Content) savedInstanceState.getSerializable("array");
-        newsList = getSupportFragmentManager().findFragmentByTag("list");
         firstLoad = savedInstanceState.getBoolean("state", false);
         view = (IView<Channel>) newsList;
         if (content.hasChannels()) {
@@ -65,10 +70,6 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
     }
 
     private void nullBundle() {
-        newsList = new NewsList();
-        if (getSupportFragmentManager().findFragmentByTag("list")==null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.frame, newsList, "list").commit();
-        }
         view = (IView<Channel>) newsList;
         takeData(mainUrls);
     }
@@ -79,7 +80,7 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
     }
 
     private void showNetworkAlert() {
-        android.support.v7.app.AlertDialog al = DialogsBuilder.createAlert(this, "No internet connection");
+        android.app.AlertDialog al = DialogsBuilder.createAlert(this, "No internet connection");
         al.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -103,7 +104,8 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
 
     private void takeData(String... url) {
         if (isNetworkConnected()) {
-            IPresenter presenter = new DataLoader(this, this);
+            if (presenter==null)
+                presenter = new DataLoader(this, this);
             if (url == null) {
                 presenter.getData(mainUrls);
             } else {
@@ -125,9 +127,10 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
         drawer = initDrawer(content.getChannels());
         if (firstLoad) {
             drawer.openDrawer();
-            firstLoad = false;
+            if (drawer.isDrawerOpen())
+                firstLoad = false;
+            view.loadItem(content.getChannel(lastPosition));
         }
-        view.loadItem(content.getChannel(lastPosition));
         clearProgressDialog();
     }
 
@@ -185,10 +188,10 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
 
     @Override
     public void onError(Throwable e) {
-        Log.d("Error", e.getLocalizedMessage());
+//        Log.d("Error", e.getLocalizedMessage());
         e.printStackTrace();
         clearProgressDialog();
-        DialogsBuilder.createAlert(this, "Opss... ").show();
+        DialogsBuilder.createAlert(this, "Opss... " + e.getCause().toString()).show();
         view.onError(e);
     }
 
@@ -197,20 +200,19 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
         if (channels.size() == 1) {
             reLoad(channels.get(0));
         } else if (channels.size() > 1) {
-            content = new Content((ArrayList<Channel>)channels);
+            content = new Content((ArrayList<Channel>) channels);
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        clearProgressDialog();
         if (content != null) {
             outState.putSerializable("array", content);
             outState.putInt("position", lastPosition);
             outState.putBoolean("state", firstLoad);
         }
-        clearProgressDialog();
         super.onSaveInstanceState(outState);
-
     }
 
     @Override

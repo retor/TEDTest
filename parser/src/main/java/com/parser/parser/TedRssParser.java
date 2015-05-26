@@ -10,7 +10,7 @@ import org.w3c.dom.NodeList;
 /**
  * Created by retor on 07.05.2015.
  */
-public class Parser implements IParser<Channel> {
+public class TedRssParser implements IParser<Channel> {
 
     private IParser<ChannelImage> channelImageFiller = new IParser<ChannelImage>() {
         @Override

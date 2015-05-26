@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -82,8 +81,8 @@ public class VideoPlay extends Activity {
         });
     }
 
-    private AlertDialog getAlertDialog() {
-        AlertDialog al = DialogsBuilder.createAlert(VideoPlay.this, "Bad file or connection is lost");
+    private android.app.AlertDialog getAlertDialog() {
+        android.app.AlertDialog al = DialogsBuilder.createAlert(VideoPlay.this, "Bad file or connection is lost");
         al.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {

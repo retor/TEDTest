@@ -1,9 +1,9 @@
 package com.retor.tedtest.main;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
 
 /**
  * Created by Admin on 13.05.15.

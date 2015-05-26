@@ -12,12 +12,12 @@ import java.io.IOException;
 /**
  * Created by retor on 07.05.2015.
  */
-public class RssLoader implements ILoader<Document> {
+public class TedRssLoader implements ILoader<Document> {
 
     private DocumentBuilderFactory factory;
     private DocumentBuilder builder;
 
-    public RssLoader() {
+    public TedRssLoader() {
         this.factory = DocumentBuilderFactory.newInstance();
     }
 

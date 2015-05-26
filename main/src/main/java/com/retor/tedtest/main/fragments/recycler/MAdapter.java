@@ -52,6 +52,7 @@ public class MAdapter extends RecyclerView.Adapter<MViewHolder> {
     public void onBindViewHolder(MViewHolder holder, final int i) {
         final Item tmp = items.get(i);
         if (tmp != null && tmp.getTitle() != null) {
+            holder.itemView.animate();
             holder.getHeaderText().setText(tmp.getTitle());
             Picasso.with(context).load(Uri.parse(tmp.getThumbnail().getUrl())).into(holder.getThumb());
             holder.getDescription().setText(Html.fromHtml(tmp.getDescription()));

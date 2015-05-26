@@ -26,7 +26,7 @@
                 android:name=".fragments.video.VideoPlay"
                 android:label="VideoPlay"
                 android:screenOrientation="landscape"
-                android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+                android:theme="@style/AppTheme">
         </activity>
     </application>
 
