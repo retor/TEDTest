@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,8 +19,11 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.parser.beans.Channel;
 import com.retor.tedtest.dataloader.DataLoader;
-import com.retor.tedtest.dataloader.IPresenter;
-import com.retor.tedtest.main.fragments.recycler.NewsList;
+import com.retor.tedtest.dataloader.IModel;
+import com.retor.tedtest.dataloader.SimpleRxModel;
+import com.retor.tedtest.main.fragments.newslist_cardslib.News;
+import com.retor.tedtest.main.help.Content;
+import com.retor.tedtest.main.help.DialogsBuilder;
 import com.retor.tedtest.main.interfaces.IView;
 import rx.Observer;
 
@@ -27,10 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends FragmentActivity implements Observer<List<Channel>>, IPresenter {
+public class MainActivity extends FragmentActivity implements Observer<List<Channel>>, IModel {
 
     private String mainUrl = "http://www.ted.com/themes/rss/id/6";
-    private String[] mainUrls = {mainUrl, "http://www.ted.com/themes/rss/id/25", "http://www.ted.com/themes/rss/id/5", "http://www.ted.com/themes/rss/id/2"};
+    private String[] mainUrls = {mainUrl, "http://www.ted.com/themes/rss/id/4", "http://www.ted.com/themes/rss/id/16", "http://www.ted.com/themes/rss/id/3", "http://www.ted.com/themes/rss/id/17", "http://www.ted.com/themes/rss/id/10", "http://www.ted.com/themes/rss/id/7", "http://www.ted.com/themes/rss/id/12",  "http://www.ted.com/themes/rss/id/25", "http://www.ted.com/themes/rss/id/5", "http://www.ted.com/themes/rss/id/2"};
     private ProgressDialog pd;
     private Content content;
     private IView<Channel> view;
@@ -38,14 +42,16 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
     private Drawer.Result drawer;
     private int lastPosition = 0;
     private boolean firstLoad = true;
-    private IPresenter presenter = new DataLoader(this, this);
+//    private IModel model = new DataLoader(this, this);
+    private IModel model = new SimpleRxModel(this, this);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (getSupportFragmentManager().findFragmentByTag("list") == null) {
-            newsList = new NewsList();
+            newsList = new News();
             getSupportFragmentManager().beginTransaction().add(R.id.frame, newsList, "list").commit();
         }else{
             newsList = getSupportFragmentManager().findFragmentByTag("list");
@@ -104,12 +110,12 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
 
     private void takeData(String... url) {
         if (isNetworkConnected()) {
-            if (presenter==null)
-                presenter = new DataLoader(this, this);
+            if (model ==null)
+                model = new DataLoader(this, this);
             if (url == null) {
-                presenter.getData(mainUrls);
+                model.getData(mainUrls);
             } else {
-                presenter.getData(url);
+                model.getData(url);
             }
             createShowProgress();
         } else {
@@ -124,7 +130,7 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
     }
 
     private void firstLoad() {
-        drawer = initDrawer(content.getChannels());
+        drawer = initDrawer(content);
         if (firstLoad) {
             drawer.openDrawer();
             if (drawer.isDrawerOpen())
@@ -134,7 +140,34 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
         clearProgressDialog();
     }
 
-    private Drawer.Result initDrawer(ArrayList<Channel> data) {
+    private Drawer.Result initDrawer(final Content data) {
+        Drawer.Result out = new Drawer()
+                .withActivity(this)
+                .withActionBarDrawerToggle(true)
+                .withHeader(R.layout.fragment_navigation_drawer)
+                .addDrawerItems(fillDrawerMenu(data.getChannels()))
+                .addDrawerItems(new PrimaryDrawerItem().withName("Change View").withIcon(FontAwesome.Icon.faw_bomb).setEnabled(false))
+                .addDrawerItems(new DividerDrawerItem())
+                .addDrawerItems(new PrimaryDrawerItem().withName("Refresh All").withIcon(FontAwesome.Icon.faw_refresh))
+                .build();
+        out.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+                Log.d("Checked channel", " "+i);
+                if (data.getChannels().size() > i / 2) {
+                    lastPosition = i / 2;
+                    Log.d("Checked channel", data.getChannels().get(lastPosition).getTitle() + " " + lastPosition);
+                    MainActivity.this.view.loadItem(data.getChannels().get(lastPosition));
+                }
+                if (data.getChannels().size()+1 == i/2) {
+                    getData(mainUrls);
+                }
+            }
+        });
+        return out;
+    }
+
+    private IDrawerItem[] fillDrawerMenu(ArrayList<Channel> data){
         IDrawerItem[] items = new IDrawerItem[data.size() * 2];
         int i = 0;
         for (Channel c : data) {
@@ -143,26 +176,7 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
             items[i] = new DividerDrawerItem();
             i++;
         }
-        Drawer.Result out = new Drawer()
-                .withActivity(this)
-                .withActionBarDrawerToggle(true)
-                .withHeader(R.layout.fragment_navigation_drawer)
-                .addDrawerItems(items)
-                .addDrawerItems(new PrimaryDrawerItem().withName("Refresh All").withIcon(FontAwesome.Icon.faw_refresh).withIdentifier(i))
-                .build();
-        out.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
-                if (content.getChannels().size() > i / 2) {
-                    lastPosition = i / 2;
-                    MainActivity.this.view.loadItem(content.getChannels().get(i / 2));
-                }
-                if (content.getChannels().size() == i / 2) {
-                    getData(mainUrls);
-                }
-            }
-        });
-        return out;
+        return items;
     }
 
     @Override
@@ -173,10 +187,6 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -191,8 +201,10 @@ public class MainActivity extends FragmentActivity implements Observer<List<Chan
 //        Log.d("Error", e.getLocalizedMessage());
         e.printStackTrace();
         clearProgressDialog();
-        DialogsBuilder.createAlert(this, "Opss... " + e.getCause().toString()).show();
-        view.onError(e);
+        if (e.getCause()!=null)
+            DialogsBuilder.createAlert(this, "Opss... " + e.getCause().toString()).show();
+        else
+            DialogsBuilder.createAlert(this, "Opss... " + e.toString()).show();
     }
 
     @Override

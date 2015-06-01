@@ -10,6 +10,7 @@ import com.parser.parser.TedRssParser;
 import com.parser.worker.IWorker;
 import com.parser.worker.MainWorker;
 import com.retor.tedtest.main.interfaces.IView;
+import org.w3c.dom.Document;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
@@ -26,37 +27,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by retor on 05.05.2015.
  */
-public class DataLoader implements IPresenter {
+public class DataLoader implements IModel {
     private IView<Channel> view;
     private FragmentActivity activity;
     private ArrayList<Channel> items;
-    private IWorker<Channel> worker;
+    private IWorker<Channel, Document> worker;
     private Observer<List<Channel>> observer;
-
-    public DataLoader(IView<Channel> view, FragmentActivity activity) {
-        this.view = view;
-        this.activity = activity;
-        this.observer = new Observer<List<Channel>>() {
-            @Override
-            public void onCompleted() {
-                if (items.size() > 1)
-                    DataLoader.this.view.loadData(items);
-                else
-                    DataLoader.this.view.loadItem(items.get(0));
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                DataLoader.this.view.onError(e);
-            }
-
-            @Override
-            public void onNext(List<Channel> channels) {
-                items = new ArrayList<>(channels);
-            }
-        };
-        this.worker = new MainWorker(new TedRssLoader(), new TedRssParser());
-    }
 
     public DataLoader(Observer<List<Channel>> observer, FragmentActivity activity) {
         this.observer = observer;

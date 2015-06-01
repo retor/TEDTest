@@ -62,4 +62,8 @@ dependencies {
     compile('com.mikepenz.materialdrawer:library:2.9.7@aar') {
         transitive = true
     }
+
+    compile 'com.github.gabrielemariotti.cards:cardslib-core:2.1.0'
+    compile 'com.github.gabrielemariotti.cards:cardslib-cards:2.1.0'
+    compile 'com.github.gabrielemariotti.cards:cardslib-recyclerview:2.1.0'
 }

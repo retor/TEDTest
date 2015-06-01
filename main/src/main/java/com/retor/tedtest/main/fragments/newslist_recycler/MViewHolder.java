@@ -1,4 +1,4 @@
-package com.retor.tedtest.main.fragments.recycler;
+package com.retor.tedtest.main.fragments.newslist_recycler;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;

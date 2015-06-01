@@ -1,4 +1,4 @@
-package com.retor.tedtest.main.fragments.recycler;
+package com.retor.tedtest.main.fragments.newslist_recycler;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.parser.beans.Channel;
 import com.parser.beans.Item;
-import com.retor.tedtest.dataloader.IPresenter;
+import com.retor.tedtest.dataloader.IModel;
 import com.retor.tedtest.main.R;
 import com.retor.tedtest.main.interfaces.IView;
 
@@ -24,14 +24,14 @@ import java.util.ArrayList;
 public class NewsList extends Fragment implements IView<Channel> {
     private RecyclerView recyclerView;
     private MAdapter adapter;
-    private IPresenter presenter;
+    private IModel presenter;
     private SwipeRefreshLayout swiper;
     private Channel channel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setRetainInstance(true);
-        presenter = (IPresenter) getActivity();
+        presenter = (IModel) getActivity();
         super.onCreate(savedInstanceState);
     }
 
@@ -78,10 +78,10 @@ public class NewsList extends Fragment implements IView<Channel> {
             @Override
             public void onRefresh() {
                 input.setRefreshing(false);
-                if (channel!=null){
+                if (channel != null) {
                     presenter.getData(channel.getRssUrl());
-                }else{
-                    presenter.getData(null);
+                } else {
+                    presenter.getData("");
                 }
             }
         });
@@ -94,12 +94,6 @@ public class NewsList extends Fragment implements IView<Channel> {
     }
 
     @Override
-    public void loadData(ArrayList<Channel> data) {
-        /*NOP*/
-        /*This method work in activity*/
-    }
-
-    @Override
     public void loadItem(Channel item) {
         if (item!=null){
             channel = item;
@@ -107,11 +101,5 @@ public class NewsList extends Fragment implements IView<Channel> {
             adapter.notifyDataSetChanged();
             recyclerView.scrollToPosition(0);
         }
-    }
-
-    @Override
-    public void onError(Throwable t) {
-        /*NOP*/
-        /*This method processed in MainActivity*/
     }
 }

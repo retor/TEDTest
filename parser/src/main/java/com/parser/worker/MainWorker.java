@@ -13,10 +13,9 @@ import java.util.ArrayList;
 /**
  * Created by retor on 07.05.2015.
  */
-public class MainWorker implements IWorker<Channel> {
+public class MainWorker implements IWorker<Channel, Document> {
     private ILoader<Document> loader;
     private IParser<Channel> parser;
-
 
     public MainWorker(ILoader<Document> loader, IParser<Channel> parser) {
         this.loader = loader;

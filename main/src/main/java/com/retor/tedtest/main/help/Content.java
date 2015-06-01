@@ -1,4 +1,4 @@
-package com.retor.tedtest.main;
+package com.retor.tedtest.main.help;
 
 import com.parser.beans.Channel;
 

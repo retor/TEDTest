@@ -12,8 +12,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.MediaController;
 import android.widget.VideoView;
-import com.retor.tedtest.main.DialogsBuilder;
 import com.retor.tedtest.main.R;
+import com.retor.tedtest.main.help.DialogsBuilder;
 
 /**
  * Created by retor on 15.05.2015.

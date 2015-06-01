@@ -1,4 +1,4 @@
-package com.retor.tedtest.main;
+package com.retor.tedtest.main.help;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;

@@ -30,7 +30,7 @@ public class TedRssLoader implements ILoader<Document> {
         } catch (ParserConfigurationException e) {
             throw new LoaderException("Loaded response ParserConfigurationException", e);
         } catch (SAXException e) {
-            throw new LoaderException("Loaded response SAXException", e);
+            throw new LoaderException("Loaded response SAXException" + url.subSequence(url.length()-2, url.length()), e);
         } catch (IOException e) {
             throw new LoaderException("Loaded response IOException", e);
         } finally {

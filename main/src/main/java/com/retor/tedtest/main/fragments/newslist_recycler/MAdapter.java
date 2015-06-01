@@ -1,4 +1,4 @@
-package com.retor.tedtest.main.fragments.recycler;
+package com.retor.tedtest.main.fragments.newslist_recycler;
 
 import android.content.Context;
 import android.net.Uri;
@@ -12,9 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.parser.beans.Item;
-import com.retor.tedtest.main.DialogsBuilder;
 import com.retor.tedtest.main.R;
 import com.retor.tedtest.main.fragments.dialog.MFragment;
+import com.retor.tedtest.main.help.DialogsBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
